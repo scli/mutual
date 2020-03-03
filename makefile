@@ -1,9 +1,9 @@
-COMPILER = g++-9
+COMPILER = g++
 
 INCL_DIR =  -I/usr/local/include -I/usr/local/include/gsl/ -I.
 
 HEADERS =
-LIBRARY = -L/usr/local/lib/ -L/usr/lib/ -L. -lgsl -lstdc++ -lgslcblas -lm -lgfortran -mfpmath=sse -msse3 -funroll-loops 
+LIBRARY =  -L/usr/lib/ -L/usr/local/lib -L. -lgsl -lstdc++ -lgslcblas -lm -mfpmath=sse -msse3 -funroll-loops 
 SOURCES =
 CONCERTLIBDIR =
 

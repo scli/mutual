@@ -1,6 +1,8 @@
 #include "MICMath.h"
 #include <stdlib.h>
 
+#include <iostream>
+using namespace std;
 int min(int x, int y)
 {
    if(x<y) return x;
@@ -27,7 +29,9 @@ int * permutation(int n)
      rev[i]     = rev[which];
      rev[which] = temp;  
   }
-
+  //for(int i=0; i<n; i++)
+  // cout<<rev[i]<<" "<<endl;
+  //cout<<endl;
   return rev;
 
 }

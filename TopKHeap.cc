@@ -120,7 +120,7 @@ TopKHeap::insert(MIPoint* p, double dist)
       return;
    }
   
-   if(dist>mHeapArray[1]->dist())//do nothing!
+   if(dist>=mHeapArray[1]->dist())//do nothing!
       return;
 
    delete mHeapArray[1]; 

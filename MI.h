@@ -48,6 +48,7 @@ class MutualInfo
       MutualInfo(ReplicationParser* replication);	   
      
       double estimateMI04(int r1, int r2, int k); 
+      void   estimateMI04(int k, const char* filename); 
       
       
       //implement the method of

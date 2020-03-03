@@ -15,15 +15,15 @@ void printMIHelp(char** argv)
     std::cout<<argv[0]<<endl;	
     std::cout <<
             "--input      <filename> :   input file\n"
-            "--output     <filename>:    output file name\n"
-            "--k          <k>:           a positive integer\n"
+            "--output     [filename] :   output file name, optional, default to screen.\n"
+            "--k          [k, optional]: a positive integer, default value is 3\n"
             "--help:                     Show help\n";
     exit(1);
 }
 
 string  miinput     = "";
 string  mioutput    = "";
-string  mik       = "";
+string  mik         = "3";
 int processMIArgs(int argc, char** argv)
 {
     const char* const short_opts = "i:o:e:d:h";
@@ -74,7 +74,7 @@ int
 main(int argc, char** argv)
 {
   
-   /*if(argc==1)
+   if(argc==1)
    {
       printMIHelp(argv);
 	   exit(0);
@@ -89,14 +89,14 @@ main(int argc, char** argv)
    //, atoi(mik.c_str()));
 
    MutualInfo* mi=new MutualInfo(replications);
-   cout<<mi->estimateMI04(0, 1, atoi(mik.c_str())) <<endl;;
-*/
+   mi->estimateMI04(atoi(mik.c_str()), mioutput.c_str());
 
-   ReplicationParser* replications=new ReplicationParser(argv[1]);
+
+//   ReplicationParser* replications=new ReplicationParser(argv[1]);
    //, atoi(mik.c_str()));
 
-   MutualInfo* mi=new MutualInfo(replications);
-   cout<<mi->estimateMI04(0, 1, atoi(argv[2])) <<endl;;
+//   MutualInfo* mi=new MutualInfo(replications);
+//   cout<<mi->estimateMI04(0, 1, atoi(argv[2])) <<endl;;
 
 
 
