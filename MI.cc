@@ -77,9 +77,14 @@ MutualInfo::estimateMI04(int k, const char* output)
 {
    if(strlen(output)==0)
    {
-     for(int i=0; i<mReplications->numReplications(); i++)
-     { //if there are many replicates, may consider reusing the qsort: not implemented yet. 
-      for(int j=i+1; j<mReplications->numReplications(); j++)
+    if(mReplications->numReplications()==2)
+    { 
+        cout<<estimateMI04(0, 1, k)<<endl;
+        return;
+    }
+    for(int i=0; i<mReplications->numReplications(); i++)
+     { //if there are many replicates, may consider reusing the qsort: not implemented yet.  
+      for(int j=0; j<mReplications->numReplications(); j++)
         cout<<estimateMI04(i, j, k)<<" \t";
       cout<<endl;
        
