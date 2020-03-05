@@ -47,9 +47,9 @@ ReplicationParser::readFile(const char* filename)
     }
     break;
   }
-  mNumCols = r1->size();
-  double* firstRow=new double[mNumCols];
-  for(int i=0; i < mNumCols; i++)
+  int numCols = r1->size();
+  double* firstRow=new double[numCols];
+  for(int i=0; i < numCols; i++)
      firstRow[i]=(*r1)[i];
   delete r1;
 
@@ -61,32 +61,43 @@ ReplicationParser::readFile(const char* filename)
     token=strtok(buf, ", \t\n");
     if(token==NULL) 
         continue;
-    double* replication=new double[mNumCols];
+    double* row=new double[numCols];
     int index=0;
     
-    for(int index=0; index<mNumCols; index++)
+    for(int index=0; index<numCols; index++)
     {
-      replication[index]=atof(token);
+      row[index]=atof(token);
       token=strtok(NULL, ", \t\n");
     }
-    replications->push_back(replication);
+    replications->push_back(row);
   }
 
 
   //store the data into a 2D array
-  mReplications=new double *[replications->size()];
-  for(int i=0; i<replications->size(); i++)
+  mReplications=new double *[numCols];
+  for(int i=0; i<numCols; i++)
   {
-     mReplications[i]=(*replications)[i];
+     mReplications[i]=new double[replications->size()];
+     for(int j=0; j< replications->size(); j++)
+     {
+         mReplications[i][j] =(*replications)[j][i];
+     }
+
   }
-  mNumReplicates=replications->size();
+
+  for(int i=0; i<replications->size(); i++)
+     delete (*replications)[i];
+   
+  mNumReplicates=numCols;
+  mNumPoints      =replications->size();
+  
   delete replications;
 }
 
 int
-ReplicationParser::numCols()
+ReplicationParser::numPoints()
 {
-   return mNumCols;
+   return mNumPoints;
 }
 int 
 ReplicationParser::numReplications()

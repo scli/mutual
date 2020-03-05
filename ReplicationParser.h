@@ -12,14 +12,14 @@ class ReplicationParser
       vector<string> * mColNames; 
 
       int mNumReplicates;
-      int mNumCols; 
+      int mNumPoints; 
       double** mReplications;
 
       void readFile(const char* file);
     public:
       ReplicationParser(const char* filename);
       ~ReplicationParser();
-      int numCols();
+      int numPoints();
       int numReplications();
       double** replications();
       double value(int r, int c) { return mReplications[r][c] ;}

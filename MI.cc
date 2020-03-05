@@ -37,7 +37,7 @@ MIPoint::dist(MIPoint* p, int dim)
 MutualInfo::MutualInfo(ReplicationParser* r)
 {
    mReplications=r;
-   mNumElement=r->numCols();
+   mNumElement=r->numPoints();
 }
 
 
@@ -98,7 +98,12 @@ MutualInfo::estimateMI04(int k, const char* output)
       cerr<<"Can not open the output file "<<output<<endl;
       exit(0);
    }
-   
+  
+       if(mReplications->numReplications()==2)
+    {
+        out<<estimateMI04(0, 1, k)<<endl;
+        return;
+    } 
   for(int i=0; i<mReplications->numReplications(); i++)
   {
       for(int j=i+1; j<mReplications->numReplications(); j++)

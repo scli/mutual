@@ -10,7 +10,7 @@ CONCERTLIBDIR =
 MIOBJECTS= MIMain.o ReplicationParser.o TopKHeap.o KDTree.o  MICMath.o MI.o DiGamma.o
 
 
-CFLAGS += -I/usr/local/include -I. 
+CFLAGS += -I/usr/local/include -I. -O3 
 #-I/usr/include
 
 all: Mutual
