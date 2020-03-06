@@ -2,11 +2,12 @@
 #include <float.h>
 #include <iostream>
 using namespace std;
+
+
 HeapNode::HeapNode(MIPoint* p, double dist)
 {
     mPoint = p;
     mDist  = dist;
-
 }
 
 
@@ -57,7 +58,7 @@ TopKHeap::swap(int a, int b)
 bool
 TopKHeap::leaf(int which) 
 { 
-   if (which >= (mSize / 2) && which <= mSize)  
+   if (which > (mSize / 2) && which <= mSize)  
             return true;  
    return false; 
 }
@@ -96,7 +97,7 @@ TopKHeap::heapify(int which)
        }
        return;
    }
-   //left is worse, now check the right
+   //left is less, now check the right
    if(hasRight(which) && mHeapArray[which]->dist() < mHeapArray[right(which)]->dist())
    {
         swap(which, right(which)); 

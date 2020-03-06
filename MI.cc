@@ -54,10 +54,10 @@ MutualInfo::estimateMI04(int r1, int r2, int k)
   double sum=0;
   for(int i=0; i<mNumElement; i++)
   {
-      sum+=DiGamma::digamma(Nx[i])+DiGamma::digamma(Ny[i]);
+      sum+=DiGamma::digamma(Nx[i]+1)+DiGamma::digamma(Ny[i]+1);
   }
   
-  return DiGamma::digamma(k)-1.0/k-1.0/mNumElement*sum+DiGamma::digamma(mNumElement);
+  return DiGamma::digamma(k)-1.0/mNumElement*sum+DiGamma::digamma(mNumElement);
 }
 
 
@@ -174,13 +174,19 @@ MutualInfo::calculateN(double *vect, int n, double* threshold)
    for(int i=0; i<n; i++)
    {
 
-     int lower = lowerBound(items, items[i].value-threshold[items[i].i], 0, n-1);
-     int upper = upperBound(items, items[i].value+threshold[items[i].i], 0, n-1);
+     if(threshold[items[i].i]>0)
+     {
+        lower = lowerBound(items, items[i].value-threshold[items[i].i], 0, n-1);
+        upper = upperBound(items, items[i].value+threshold[items[i].i], 0, n-1);
+     }
+     else
+     {
+        lower=items[i].i;
+        upper=items[i].i;
+     }
      
      //cout<<i<<"\t"<<items[i].value<<" "<<lower<<" "<<upper<<" "<<(items[i].value-threshold[items[i].i])<<" \t" <<(items[i].value+threshold[items[i].i])<<endl;
-     if(upper-lower-1<1)
-	 rev[items[i].i]=1;// upper-lower-1;
-     else rev[items[i].i] = upper-lower;
+     rev[items[i].i] = upper-lower+1;//include the element itself
 
     //cout<<threshold[items[i].i]<<" "<<rev[items[i].i]<<endl;
      
@@ -192,22 +198,22 @@ MutualInfo::calculateN(double *vect, int n, double* threshold)
 }
 
 
-//find the lower bound, such the value of the element is strictly larger than lower; binary search of course
+//find the index of the first element, such the value of the element is strictly larger than lower; binary search of course
 int
 MutualInfo::lowerBound(RankItem* items, double bound, int from, int to)
 {
   int mid =(to+from)/2;
   //if(from==to) return to;
-  if((mid-1 < 0 || items[mid-1].value < bound) &&  bound<= items[mid].value)
+  if((mid-1 < 0 || items[mid-1].value <= bound) &&  bound< items[mid].value)
      return mid;
 
-  if(items[mid].value < bound)
+  if(items[mid].value <= bound)
        return lowerBound(items, bound, mid+1,  to);
   else return lowerBound(items, bound, from, mid-1);
 }
 
 
-//find the upper bound, such the value of the element is strictly less than upper; binary search of course
+//find the the index of the last element, such the value of the element is strictly less than buond; binary search of course
 int
 MutualInfo::upperBound(RankItem* items, double bound, int from, int to)
 {
@@ -219,7 +225,7 @@ MutualInfo::upperBound(RankItem* items, double bound, int from, int to)
   //if(items[from].value>upper) return -1;//this should never happen
   
 
- if(items[mid].value <= bound && (mid+1==mNumElement || bound<items[mid+1].value))
+ if(items[mid].value < bound && (mid+1==mNumElement || bound<=items[mid+1].value))
      return mid;
 
   //if(items[to].value < upper) 
@@ -232,7 +238,7 @@ MutualInfo::upperBound(RankItem* items, double bound, int from, int to)
   //int mid=(int)(to+(to-from)*(lower-items[from])/(items[to]-items[from])) 
   //
 
-  if(items[mid].value > bound)
+  if(bound <= items[mid].value )
        return upperBound(items, bound, from, mid-1);
   else return upperBound(items, bound, mid+1, to);
 }
