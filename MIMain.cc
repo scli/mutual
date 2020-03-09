@@ -4,7 +4,7 @@
 #include <iostream>
 #include <getopt.h>    /* for getopt_long; POSIX standard getopt is in unistd.h */
 #include <string>
-
+#include <string.h>
 
 using namespace std;
 #include "ReplicationParser.h"
@@ -17,6 +17,7 @@ void printMIHelp(char** argv)
             "--input      <filename> :   input file\n"
             "--output     [filename] :   output file name, optional, default to screen.\n"
             "--k          [k, optional]: a positive integer, default value is 3\n"
+            "--algo       [algo, c2c or d2c, default is c2c]\n"
             "--help:                     Show help\n";
     exit(1);
 }
@@ -24,13 +25,15 @@ void printMIHelp(char** argv)
 string  miinput     = "";
 string  mioutput    = "";
 string  mik         = "3";
+string  mialgo      = "c2c";
 int processMIArgs(int argc, char** argv)
 {
-    const char* const short_opts = "i:o:e:d:h";
+    const char* const short_opts = "i:o:e:d:a:h";
     const option long_opts[] = {
             {"input",       required_argument,   nullptr, 'i'},
             {"output",      required_argument,   nullptr, 'o'},
-            {"k",         required_argument,     nullptr, 'k'},
+            {"k",           required_argument,   nullptr, 'k'},
+            {"algo",        required_argument,   nullptr, 'a'},
             {"help",        no_argument,         nullptr, 'h'},
             {nullptr,       no_argument,         nullptr,  0}
     };
@@ -59,6 +62,10 @@ int processMIArgs(int argc, char** argv)
             std::cout << "k set to: " << mik.c_str() << std::endl;
             break;
 
+          case  'a':
+            mialgo = optarg;
+            std::cout << "algo set to: " << mialgo.c_str() << std::endl;
+            break; 
 	  case 'h': // -h or --help
           case '?': // Unrecognized option
           default:
@@ -89,9 +96,14 @@ main(int argc, char** argv)
    //, atoi(mik.c_str()));
 
    MutualInfo* mi=new MutualInfo(replications);
-   mi->estimateMI04(atoi(mik.c_str()), mioutput.c_str());
-
-
+   if(strcmp(mialgo.c_str(), "c2c")==0)
+        mi->estimateMI04(atoi(mik.c_str()), mioutput.c_str());
+   else if(strcmp(mialgo.c_str(), "d2c")==0)
+        mi->estimateMI14(atoi(mik.c_str()), mioutput.c_str());
+   else
+   {  
+        cerr<<"Uknown algorithm option "<<mialgo.c_str()<<endl;
+   }
 //   ReplicationParser* replications=new ReplicationParser(argv[1]);
    //, atoi(mik.c_str()));
 

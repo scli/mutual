@@ -73,7 +73,7 @@ TopKHeap::hasRight(int which)
 double
 TopKHeap::threshold()
 {
-    if(mHeapArray[1]==NULL)
+    if(mHeapArray[1]==NULL || mSize < mK)
 	return DBL_MAX;
     return mHeapArray[1]->dist();
 }
@@ -86,7 +86,7 @@ TopKHeap::heapify(int which)
    
    if (mHeapArray[which]->dist() < mHeapArray[ left(which)]->dist())
    {
-       if(!hasRight(which) || mHeapArray[left(which)]->dist() > mHeapArray[right(which)]->dist())  {
+       if(!hasRight(which) || mHeapArray[left(which)]->dist() >= mHeapArray[right(which)]->dist())  {
           swap   (which, left(which)); 
           heapify(       left(which));
        }
@@ -98,7 +98,7 @@ TopKHeap::heapify(int which)
        return;
    }
    //left is less, now check the right
-   if(hasRight(which) && mHeapArray[which]->dist() < mHeapArray[right(which)]->dist())
+   if(hasRight(which) && mHeapArray[which]->dist() <= mHeapArray[right(which)]->dist())
    {
         swap(which, right(which)); 
         heapify(    right(which)); 
