@@ -48,9 +48,7 @@ MutualInfo::estimateMI04(int r1, int r2, int k)
   double* e2values = calculateE2(r1, r2, k);//
   int*    Nx       = calculateN(mReplications->replication(r1), mNumElement, e2values);
   int*    Ny       = calculateN(mReplications->replication(r2), mNumElement, e2values);
- 
-
-   
+  
   double sum=0;
   for(int i=0; i<mNumElement; i++)
   {
@@ -72,29 +70,29 @@ int rankCmp(const void *_a, const void *_b)
 }
 
 
-double
+void
 MutualInfo::estimateMI04(int k, const char* output)
 {
-   double ret = 0;
    if(strlen(output)==0)
    {
+printf("aa\n");
+
     if(mReplications->numReplications()==2)
     { 
-        ret = estimateMI04(0, 1, k);
-        cout<< ret <<endl;
-        return ret;
+        cout<<estimateMI04(0, 1, k)<<endl;
+        return;
     }
+    cout << mReplications->numReplications() << endl;
     for(int i=0; i<mReplications->numReplications(); i++)
      { //if there are many replicates, may consider reusing the qsort: not implemented yet.  
       for(int j=0; j<mReplications->numReplications(); j++)
       {
-        ret = estimateMI04(i, j, k);
-        cout << ret << " \t";
+        cout<<estimateMI04(i, j, k)<<" \t";
       }
       cout<<endl;
        
-    }
-    return ret;
+     }
+     return;
    }
 
    ofstream out(output);
@@ -104,41 +102,33 @@ MutualInfo::estimateMI04(int k, const char* output)
       exit(0);
    }
   
-   if(mReplications->numReplications()==2)
-   {
-       ret = estimateMI04(0, 1, k);
-       out << ret << endl;
-       return ret;
-   } 
+       if(mReplications->numReplications()==2)
+    {
+        out<<estimateMI04(0, 1, k)<<endl;
+        return;
+    } 
   for(int i=0; i<mReplications->numReplications(); i++)
   {
       for(int j=i+1; j<mReplications->numReplications(); j++)
-      {
-        ret = estimateMI04(i, j, k);
-        out << ret << " \t";
-      }
+        out<<estimateMI04(i, j, k)<<" \t";
        out<<endl;
   }
   out.close();
-  return ret;
 
 }
 
 
 
 
-double
+void
 MutualInfo::estimateMI14(int k, const char* output)
 {
-   //cout<<"I reach here"<<endl;
-   double ret = 0;
    if(strlen(output)==0)
    {
     if(mReplications->numReplications()==2)
     { 
-        ret = estimateMI14(0, 1, k);   
-        cout << ret << endl;
-        return ret;
+        cout<<estimateMI14(0, 1, k)<<endl;
+        return;
     }
    }
 
@@ -149,14 +139,12 @@ MutualInfo::estimateMI14(int k, const char* output)
       exit(0);
    }
   
-    if(mReplications->numReplications()==2)
+       if(mReplications->numReplications()==2)
     {
-        ret = estimateMI14(0, 1, k);
-        out << ret << endl;
+        out<<estimateMI14(0, 1, k)<<endl;
         out.close();
-        return ret;
+        return;
     } 
-    return ret;
 
 }
 
@@ -184,20 +172,7 @@ MutualInfo::calculateE2(int r1, int r2, int k)
       TopKHeap* topK=kdTree->KNN(mPoints[i], k+1);//plus 1 for itself
       mResult[i] = topK->threshold();
       //cout<<topK->threshold()<<endl; 
-     
-
-     //below codes are for debugging 
-      int counter=0;
-      for(int j=0; j<mNumElement; j++) 
-         if(mPoints[j]->dist(mPoints[i], 2)<=mResult[i]) counter++;
-      if(k+1!=counter)
-      {
-         cerr<<"Got bugs in calculating the top k threshold"<<endl;
-      }
-     //above codes are for debugging
-
-     delete topK;
-
+      delete topK;
     } 
 
     delete kdTree;
@@ -223,42 +198,13 @@ MutualInfo::calculateN(double *vect, int n, double* threshold)
       items[i].i    =i;
       
    }//for 
-  
-
-
-   qsort(items, n, sizeof(struct RankItem), rankCmp);
- 
-    /*  
-   //below are the code for debugs purpose only
-   for(int i=0; i<n; i++)
-   {
-      cout<<items[i].i<<" \t/// "<<items[i].value<<" \t/// "<<vect[items[i].i]<<endl;
    
-   }
-
-
-
-
-   for(int k=0; k<n; k++)
-   { 
-//	int counterSame =0;
-        int counterAll  =0;
-	for(int j=0; j<n; j++)
-	{
-	   if(fabs(items[k].value-items[j].value)<threshold[items[k].i])
-	   {
-	      counterAll++;
-	   }
-	}
-	cout<<items[k].i<<"\t"<<counterAll<<"\t "<<"\t +++"<<endl;
-   }*/
-   //end of debug 
-
+   qsort(items, n, sizeof(struct RankItem), rankCmp);
 
 
    int lower=0;
    int upper=0;
-  // for(int i=0; i< n; i++)
+   //for(int i=0; i< n; i++)
    //  cout<<i<<" :\t" <<items[i].value<<endl;
 
    for(int i=0; i<n; i++)
@@ -273,35 +219,15 @@ MutualInfo::calculateN(double *vect, int n, double* threshold)
      {
         lower=items[i].i;
         upper=items[i].i;
-        cout<<"ever reach here?"<<endl;
      }
      
      //cout<<i<<"\t"<<items[i].value<<" "<<lower<<" "<<upper<<" "<<(items[i].value-threshold[items[i].i])<<" \t" <<(items[i].value+threshold[items[i].i])<<endl;
-     rev[items[i].i] = upper-lower;//exclude the element itself
-    
-     //below codes are for debugging
-     /*int counter=0;
-     for(int j=0; j<n; j++)
-        if(fabs(items[j].value-items[i].value) < threshold[items[i].i])
-          counter++;
-     if(counter!=rev[items[i].i]+1)
-     {
-       cout<<"bugs in calculating the subspace neighbors   "<<counter<<" "<<rev[items[i].i]+1<<endl;
-       cout<<lower<<" "<<upper<<" "<<i<<endl;
-       for(int j=0; j<n; j++)
-        if(fabs(items[j].value-items[i].value) < threshold[items[i].i])
-           cout<<j<<" ";
-        cout<<endl;
+     rev[items[i].i] = upper-lower+1;//include the element itself
 
-	cout<<items[lower].value<<" "<<items[i].value-threshold[items[i].i]<<"\t tttt\t" <<items[upper].value<<" "<<items[i].value+threshold[items[i].i]<<endl;
-     }*/
-       //the above codes are for debugging
-    
-    //cout<<"+++++++"<<i<<" "<<threshold[items[i].i]<<" "<<rev[items[i].i]<<endl;
+    //cout<<threshold[items[i].i]<<" "<<rev[items[i].i]<<endl;
      
    }//for
-
- 
+   
    delete [] items; 
    //exit(0);
    return rev;
@@ -365,22 +291,12 @@ MutualInfo::calculateM(double *vect, int n, double* threshold)
 int
 MutualInfo::lowerBound(RankItem* items, double bound, int from, int to)
 {
-  if(items[from].value > bound) return from;
-  
   int mid =(to+from)/2;
-  while(items[mid].value==bound && mid<to) mid++; 
-  
-  if((mid-1 < 0 || items[mid-1].value <= bound) &&  bound < items[mid].value)
+  //if(from==to) return to;
+  if((mid-1 < 0 || items[mid-1].value <= bound) &&  bound< items[mid].value)
      return mid;
 
-  if(items[to].value==bound)//it should not happen
-  {
-     cerr<<"entering an invalid case "<<to<<endl;
-     return to+1;//should be to +1;
-  }
-
-
-  if(items[mid].value < bound)
+  if(items[mid].value <= bound)
        return lowerBound(items, bound, mid+1,  to);
   else return lowerBound(items, bound, from, mid-1);
 }
@@ -390,25 +306,28 @@ MutualInfo::lowerBound(RankItem* items, double bound, int from, int to)
 int
 MutualInfo::upperBound(RankItem* items, double bound, int from, int to)
 {
-  if(items[to].value < bound) return to;
+ 
 
-  int mid = (to+from)/2;
-  while(items[mid].value==bound && from<mid) mid--; 
+ int mid = (to+from)/2;
+ //if(from==to) return to
+ // cout<<from<<":"<<items[from].value<<" "<< "----------"<<upper<<"------"<<to<<":"<<items[to].value<<""<<endl;
+  //if(items[from].value>upper) return -1;//this should never happen
+  
 
-  if(items[mid].value < bound && (mid+1==mNumElement || bound<=items[mid+1].value))
+ if(items[mid].value < bound && (mid+1==mNumElement || bound<=items[mid+1].value))
      return mid;
 
-  if(items[from].value==bound)//it should not happen
-  {
-     return from-1;//should be to +1;
-  }
-
+  //if(items[to].value < upper) 
+//	  return to;
+  //int mid = (to+from)/2;
+  //if(to-from<=1)
+  //    return to; 
+  
   //the below line will give a loglogn resuls on averge, maybe turn it on when the dataset is large
   //int mid=(int)(to+(to-from)*(lower-items[from])/(items[to]-items[from])) 
   //
 
-
-  if(bound < items[mid].value )
+  if(bound <= items[mid].value )
        return upperBound(items, bound, from, mid-1);
   else return upperBound(items, bound, mid+1, to);
 }
@@ -462,7 +381,7 @@ MutualInfo::estimateMI14(int r1, int r2, int k)
    {
      if(Nx[i]<k+1)
      {
-       cerr<<"k seems too large; it should not be larger than "<<Nx[i]-1<<" for this dataset."<<endl;
+       cerr<<"k seems too large. It should not be larger than "<<Nx[i]-1<<" for this dataset"<<endl;
        exit(0);
      }
    }  
@@ -470,43 +389,19 @@ MutualInfo::estimateMI14(int r1, int r2, int k)
 
  
    double* thresholds =calculateE2(items, r1, r2, k, from, Nx);
+
+
+
    //among the elements same as element, we want to obtains the 
    //threshold
    //
 
    //then we need to count the number mi, according to the threshold
-   int * m      =calculateN(mReplications->replication(r2), mNumElement, thresholds);
-   
-   
-    //below are the code for debugs purpose only
-   /*for(int i=0; i<mNumElement; i++)
-   { 
-	int counterSame =0;
-        int counterAll  =0;
-	for(int j=0; j<mNumElement; j++)
-	{
-	   if(fabs(mReplications->value(r2, i)-mReplications->value(r2, j))<thresholds[i])
-	   {
-	      counterAll++;
-	      if(mReplications->value(r1, i)==mReplications->value(r1, j))
-		  counterSame++;
-	   }
-	}
-	cout<<i<<"\t"<<counterAll<<"\t +++\t"<<counterSame<<"\t +++\t"<<m[i]<<endl;
-   }*/
-   //end of debug 
-   
-   
-   
-   
+   int * m      =calculateM(mReplications->replication(r2), mNumElement, thresholds);
    double sum=0; 
    for(int i=0; i<mNumElement; i++)
    {
-                            //-1 here for the element itself
-     //cout<<m[items[i].i]<<" "<<Nx[items[i].i]<<endl;
-     ///cout.flush();
-                          //plus one here is to count the boundary
-     sum+=DiGamma::digamma(m[items[i].i]+1)+DiGamma::digamma(Nx[items[i].i]);
+     sum+=DiGamma::digamma(m[i])+DiGamma::digamma(Nx[items[i].i]);
    }
    delete [] from;
    delete [] Nx;
@@ -530,27 +425,15 @@ MutualInfo::calculateE2(RankItem * items, int r1, int r2, int k, int* from, int*
     {
        MIPoint**  points =new MIPoint *[Nx[i]];
        for(int j=0; j<Nx[i]; j++)
-       {      
- 	  points[j]=new MIPoint(mReplications->value(r1, items[from[i]+j].i), 
+	  points[j]=new MIPoint(mReplications->value(r1, items[from[i]+j].i), 
 			        mReplications->value(r2, items[from[i]+j].i));
-          //cout<<items[from[i]+j].i<<"\t "<<mReplications->value(r1, items[from[i]+j].i)<<" \t"<<mReplications->value(r2, items[from[i]+j].i)<<endl;
-       }
+
        KDTree* kdTree = new KDTree(points, Nx[i], 2);
        for(int j=0; j<Nx[i]; j++)
        {
           TopKHeap* topK              = kdTree->KNN(points[j], k+1);//plus 1 for itself
           result[items[from[i]+j].i]  = topK->threshold();
-          //cout<<"-----"<<items[from[i]+j].i<<" \t"<<items[from[i]+j].value<<" \t"<<topK->threshold()<<endl; 
-          
-         int counter=0;
-         for(int l=0; l<Nx[i]; l++)
-           if(points[l]->dist(points[j], 2)<=result[items[from[i]+j].i]) counter++;
-         if(k+1!=counter)
-         {
-         cerr<<"Got bugs in calculating the top k threshold"<<endl;
-         }
-        //cout<<counter<<endl;
-     //above codes are for debugging
+          //cout<<"-----"<<items[from[i]+j].i<<" "<<topK->threshold()<<endl; 
           delete topK;
        } 
 
@@ -602,10 +485,10 @@ MutualInfo::countNx(double *vect, int n, int* from, int* Nx)
        }
        i = to + 1;
   }
-  //for(int i=0; i<n; i++)
-  //{
-    //  cout<<items[i].value<<" "<<from[i]<<" "<<Nx[i]<<endl; 
-  //}
+//  for(int i=0; i<n; i++)
+//  {
+//     cout<<items[i].value<<" "<<from[i]<<" "<<Nx[i]<<endl; 
+//  }
   
    return items; 
 }

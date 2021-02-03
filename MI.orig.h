@@ -53,11 +53,11 @@ class MutualInfo
       MutualInfo(ReplicationParser* replication);	   
      
       double estimateMI04(int r1, int r2, int k); 
-      double estimateMI04(int k, const char* filename); 
+      void   estimateMI04(int k, const char* filename); 
       
       //assume the vector indexed by r1 is discrete and by r2 is continuous.
       double estimateMI14(int r1, int r2, int k);      
-      double estimateMI14(int k, const char* filename); 
+      void   estimateMI14(int k, const char* filename); 
       
       //implement the method of
       //PHYSICAL REVIEW E 69, 066138 (2004)

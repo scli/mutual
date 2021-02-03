@@ -12,18 +12,8 @@ ReplicationParser::ReplicationParser(const char* name)
   readFile(name);
 }
 
-ReplicationParser::ReplicationParser()
-{
-}
-
 ReplicationParser::~ReplicationParser()
 {
-}
-
-void
-ReplicationParser::show(int i, int j)
-{
-    cout << i << "," << j << "=" << mReplications[i][j] << endl;
 }
 
 void

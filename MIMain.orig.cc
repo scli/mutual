@@ -6,13 +6,6 @@
 #include <string>
 #include <string.h>
 
-#ifdef _PYMODULE_
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <pybind11/stl.h>
-namespace py = pybind11;
-#endif
-
 using namespace std;
 #include "ReplicationParser.h"
 #include "MI.h"
@@ -33,9 +26,6 @@ string  miinput     = "";
 string  mioutput    = "";
 string  mik         = "3";
 string  mialgo      = "c2c";
-
-#ifndef _PYMODULE_
-
 int processMIArgs(int argc, char** argv)
 {
     const char* const short_opts = "i:o:e:d:a:h";
@@ -109,7 +99,7 @@ main(int argc, char** argv)
    if(strcmp(mialgo.c_str(), "c2c")==0)
         mi->estimateMI04(atoi(mik.c_str()), mioutput.c_str());
    else if(strcmp(mialgo.c_str(), "d2c")==0)
-        mi->estimateMI14(atoi(mik.c_str()), mioutput.c_str());//the 2014 plos one paper. 
+        mi->estimateMI14(atoi(mik.c_str()), mioutput.c_str());
    else
    {  
         cerr<<"Uknown algorithm option "<<mialgo.c_str()<<endl;
@@ -119,64 +109,9 @@ main(int argc, char** argv)
 
 //   MutualInfo* mi=new MutualInfo(replications);
 //   cout<<mi->estimateMI04(0, 1, atoi(argv[2])) <<endl;;
+
+
+
+
    return 0;
 }
-
-#else /* _PYMODULE_ defined */
-
-int k = 3, algo = 0;
-int setk(int x) { k = x; return k; }
-int setalgo(int a) { algo = a; return algo; }
-//double mi(py::array_t<double> x)
-double mi(py::array_t<double> x, py::array_t<double> y)
-{
-    py::buffer_info buf1 = x.request(), buf2 = y.request();
-    double *ptr1 = (double *) buf1.ptr, *ptr2 = (double *) buf2.ptr;
-
-    int numRows = buf1.shape[0];
-    int numCols = 2;
-    ReplicationParser* rp = new ReplicationParser();
-    rp->mReplications = new double *[numCols];
-    rp->mReplications[0] = new double[numRows];
-    rp->mReplications[1] = new double[numRows];
-    for (int j=0; j < numRows; j++)
-    {
-        double xval = ptr1[j];
-        double yval = ptr2[j];
-        rp->mReplications[0][j] = xval;
-        rp->mReplications[1][j] = yval;
-    }
-    cout << "x vals: ";
-    for (int j=0; j < numRows; j++)
-        cout << rp->mReplications[0][j] << ", ";
-    cout << endl;
-    cout << "y vals: ";
-    for (int j=0; j < numRows; j++)
-        cout << rp->mReplications[1][j] << ", ";
-    cout << endl;
-
-    rp->mNumReplicates = numCols;
-    rp->mNumPoints = numRows;
-
-    MutualInfo* mut = new MutualInfo(rp);
-    double ret;
-    if (algo == 0)
-    {
-        cout << "algo=2004, k=" << k << endl;
-        ret = mut->estimateMI04(k, mioutput.c_str());
-    }
-    else
-    {
-        cout << "algo=2014, k=" << k << endl;
-        ret = mut->estimateMI14(k, mioutput.c_str());
-    }
-    return ret;
-}
-
-PYBIND11_MODULE(mi, m){
-    m.doc() = "MI";
-    m.def("mi", &mi, "Compute MI");
-    m.def("setk", &setk, "Set k");
-    m.def("setalgo", &setalgo, "Set algo");
-}
-#endif
